@@ -7,37 +7,37 @@ from matplotlib.pyplot import draw_if_interactive;
 import mediapipe as mp;
 import numpy as np;
 from datetime import datetime
-from paho.mqtt import client as mqtt_client
-import random
-from random import randrange, uniform
-import time
+from mqtt_connection import*
 
-broker = 'broker.emqx.io'
-port = 1883
-topic = "PARPADEO"
-client_id = f'python-mqtt-{random.randint(0, 1000)}' 
-username = 'Francisco'
-password = 'public'
+def send_message (t3,t1,t2):
+    if t3<0:
+       t3= t3*-1
 
-def connect_mqtt():
-    def on_connect(client, userdata, flags, rc):
-        if rc == 0:
-            print("Connected to MQTT Broker!")
-        else:
-            print("Failed to connect, return code %d\n", rc)
-    # Set Connecting Client ID
-    client = mqtt_client.Client(client_id)
-    client.username_pw_set(username, password)
-    client.on_connect = on_connect
-    client.connect(broker, port)
-    return client
+    if t3< 1.2:
+        publish(topic,"Ayuda")
+     
+       
+      
+        t3 =0
+    elif t3< 2.2:
+        publish(topic,"QUIERO HABLAR")
 
+        
+        t1=0
+        t2=0
+       
+    else:
+      
+        publish(topic,"Todo Ok")
+        blink_counter = 0 
+        t1=0
+        t2=0
 
-
-
-
-
-
+def publish(topic,payload):
+    print()
+    client.publish(topic,payload)
+ 
+ 
 def eye_aspect_ratio(coordinates):
     d_A = np.linalg.norm(np.array(coordinates[1])-np.array(coordinates[5]))
     d_B = np.linalg.norm(np.array(coordinates[2])-np.array(coordinates[4]))
@@ -60,31 +60,6 @@ blink_counter=0
 t1 = 0
 t2 = 0
 t3=0
-def send_message (t3,t1,t2):
-    if t3<0:
-       t3= t3*-1
-
-    if t3< 1.2:
-        message = "AYUDA"
-        print (message)
-        client.publish("PARPADEO", message)
-        print("Just published " + message + " to topic PARPADEO")
-      
-        t3 =0
-    elif t3< 2.2:
-        message ="QUIERO HABLAR"
-        print (message)
-        client.publish("PARPADEO", message)
-        print("Just published " + message + " to topic PARPADEO")
-        
-        t1=0
-        t2=0
-       
-    else:
-        print("todo Ok")
-        blink_counter = 0 
-        t1=0
-        t2=0
 
 
 with mp_face_mesh.FaceMesh(
@@ -146,8 +121,6 @@ with mp_face_mesh.FaceMesh(
                             print("van ", t3)
                             blink_counter=0
                             t3=0
-
-
         cv2.imshow("Frame", frame)
         k=cv2.waitKey(1) & 0xFF
         if k == 27:

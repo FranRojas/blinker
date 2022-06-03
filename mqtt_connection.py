@@ -1,17 +1,44 @@
-import paho.mqtt.client as mqtt 
-from random import randrange, uniform
+
+import paho.mqtt.client as mqtt
 import time
 
-mqttBroker ="mqtt.eclipseprojects.io" 
+broker_address= "40923ae94e934107b11ee48351971009.s2.eu.hivemq.cloud"
+port = 8883
+user = "francis"
+password = "Igna1695"
+topic = "Parpadeo/aviso/prueba"
+message="Ayuda"
+def publish(topic, message):
+    print(message)
+    client.publish(topic, message)
+ 
+def on_connect(client, userdata, flags, rc):
+ 
+    if rc == 0:
+ 
+        print("Connected to broker")
+            #Signal connection 
+ 
+    else:
+ 
+        print("Connection failed")
+def on_message(client, userdata,msg):
+    print("Received message: " +msg.topic + " "+ msg.payload.decode("utf-8") )
 
-client = mqtt.Client("Temperature_Inside")
-client.connect(mqttBroker) 
-
-while True:
-    randNumber = uniform(20.0, 21.0)
-    client.publish("PARPADEO", MENSAJE)
-    print("Just published " + str(randNumber) + " to topic TEMPERATURE")
-    time.sleep(1)
 
 
-  
+ 
+client = mqtt.Client()               #create new instance
+client.username_pw_set(user, password=password)    #set username and password
+client.on_connect= on_connect                      #attach function to callback
+client.on_message = on_message
+client.connect(broker_address, 8883)          #connect to broker
+client.tls_set(tls_version= mqtt.ssl.PROTOCOL_TLS)
+ 
+client.loop_start()        #start the loop
+ 
+
+
+ 
+
+ 
